@@ -1,0 +1,7 @@
+*.log
+package-lock.json
+bun.lockb
+
+.idea/
+dist/
+node_modules/
