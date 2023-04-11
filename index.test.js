@@ -18,6 +18,11 @@ it('should open in-memory database', () => {
     assert.deepEqual(query.get(), {message: 'Hello world'})
 
     //when & then
+    const results = query.all()
+    assert.deepEqual(Array.isArray(results), true);
+    assert.deepEqual(results, [{message: 'Hello world'}])
+
+    //when & then
     db.close()
 })
 
@@ -26,10 +31,11 @@ it('should create file-based database', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "better-sqlite3-wrapper-"))
     const file = path.join(tmpDir, "test.db")
     let db = new Database(file)
+    const changesQuery = db.prepare("SELECT changes() AS changes;")
     const lastInsertRowIdQuery = db.prepare("SELECT last_insert_rowid() AS id;")
 
     //when
-    const lastInsertRowId = db.transaction(() => {
+    const [changes, lastInsertRowId] = db.transaction(() => {
         db.prepare(`
             create table test(
                 id     integer primary key,
@@ -39,10 +45,11 @@ it('should create file-based database', () => {
         const insert = db.prepare("insert into test (name) values (?);")
         insert.run("test1")
         insert.run("test2")
-        return lastInsertRowIdQuery.get().id
+        return [changesQuery.get().changes, lastInsertRowIdQuery.get().id]
     })()
         
     //then
+    assert.deepEqual(changes, 1)
     assert.deepEqual(lastInsertRowId, 2)
     db.close()
     assert.deepEqual(fs.existsSync(file), true)
