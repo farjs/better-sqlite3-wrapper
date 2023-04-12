@@ -58,7 +58,7 @@ jobs:
         npm --no-git-tag-version --allow-same-version version $VERSION
         npm pack
         echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        npm publish farjs-better-sqlite3-wrapper-${VERSION}.tgz
+        npm publish --access=public farjs-better-sqlite3-wrapper-${VERSION}.tgz
       if: ${{ env.TAG_NAME != '' }}
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
