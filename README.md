@@ -17,3 +17,10 @@ For example, since `run` returns `undefined` you can use the following queries t
 const changes = db.prepare("SELECT changes() AS changes;").get().changes;
 const lastInsertRowId = db.prepare("SELECT last_insert_rowid() AS id;").get().id;
 ```
+
+Also, since `db.pragma` is not available in `bun:sqlite`, you can run:
+
+```javascript
+// non-transactional
+db.prepare("PRAGMA foreign_keys = ON;").run();
+```

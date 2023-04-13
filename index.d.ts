@@ -27,7 +27,6 @@ declare namespace BetterSqlite3 {
             source: string,
         ): BindParameters extends any[] ? Statement<BindParameters> : Statement<[BindParameters]>;
         transaction<F extends VariableArgFunction>(fn: F): Transaction<F>;
-        pragma(source: string): any;
         close(): this;
     }
 

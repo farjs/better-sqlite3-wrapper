@@ -11,7 +11,6 @@ const it = function() {
 it('should open in-memory database', () => {
     //when
     const db = new Database(":memory:")
-    db.pragma('journal_mode = WAL')
     const query = db.prepare("select 'Hello world' as message;")
 
     //then
