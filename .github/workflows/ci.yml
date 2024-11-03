@@ -3,62 +3,60 @@ name: CI
 on:
   push:
     paths-ignore:
-      - '*.md'
-    branches: [ main ]
+      - "*.md"
+    branches: [main]
     tags:
-      - '*'
+      - "*"
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.nvm
+            ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/node_modules
+            ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/package-lock.json
+          key: ${{ runner.os }}-node_modules-cache-v4-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-cache-v4-
 
-    - name: Cache node_modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.npm
-          ~/.nvm
-          ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/node_modules
-          ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/package-lock.json
-        key: ${{ runner.os }}-node_modules-cache-v3-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node_modules-cache-v3-
+      - name: Extract Tag Name
+        run: echo "TAG_NAME=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+        if: ${{ startsWith(github.ref, 'refs/tags') }}
 
-    - name: Extract Tag Name
-      run: echo "TAG_NAME=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
-      if: ${{ startsWith(github.ref, 'refs/tags') }}
+      - name: Run tests
+        run: |
+          npm i
+          node ./index.test.js
+        if: ${{ env.TAG_NAME == '' }}
 
-    - name: Run tests
-      run: |
-        npm i
-        node --test
-      if: ${{ env.TAG_NAME == '' }}
+      - name: Build SNAPSHOT
+        run: npm pack
+        if: ${{ env.TAG_NAME == '' }}
 
-    - name: Build SNAPSHOT
-      run: npm pack
-      if: ${{ env.TAG_NAME == '' }}
-
-    - name: Publish RELEASE
-      run: |
-        VERSION="$(echo "$TAG_NAME" | cut -d'v' -f 2)"
-        echo "Publish a release version=$VERSION for tag $TAG_NAME"
-        npm --no-git-tag-version --allow-same-version version $VERSION
-        npm pack
-        echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        npm publish --access=public farjs-better-sqlite3-wrapper-${VERSION}.tgz
-      if: ${{ env.TAG_NAME != '' }}
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish RELEASE
+        run: |
+          VERSION="$(echo "$TAG_NAME" | cut -d'v' -f 2)"
+          echo "Publish a release version=$VERSION for tag $TAG_NAME"
+          npm --no-git-tag-version --allow-same-version version $VERSION
+          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+          npm publish
+        if: ${{ env.TAG_NAME != '' }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
