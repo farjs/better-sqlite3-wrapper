@@ -6,7 +6,6 @@
     "url": "git+https://github.com/farjs/better-sqlite3-wrapper.git"
   },
   "author": "viktor-podzigun",
-  "private": false,
   "description": "Thin api wrapper around better-sqlite3 and bun:sqlite to allow cross- runtime/engine usage",
   "license": "MIT",
   "bugs": {
@@ -27,12 +26,16 @@
   "main": "./index.js",
   "exports": "./index.js",
   "typings": "./index.d.ts",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "browserslist": "maintained node versions",
   "engines": {
-    "node": ">=14.21.1",
-    "bun": ">=0.5.8"
+    "node": ">=18",
+    "bun": ">=0.8"
   },
   "optionalDependencies": {
-    "better-sqlite3": "^8.2.0"
+    "better-sqlite3": "^11.5.0"
   }
 }
