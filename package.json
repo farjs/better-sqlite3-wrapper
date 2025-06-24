@@ -7,6 +7,12 @@
   },
   "author": "viktor-podzigun",
   "description": "Thin api wrapper around better-sqlite3 and bun:sqlite to allow cross- runtime/engine usage",
+  "scripts": {
+    "lint": "quick-lint-js ./*.js",
+    "test": "bun test && node ./index.test.js",
+    "format": "prettier **/*.js --write",
+    "formatCheck": "prettier **/*.js --check"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/farjs/better-sqlite3-wrapper/issues"
@@ -37,5 +43,9 @@
   },
   "optionalDependencies": {
     "better-sqlite3": "^11.5.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8",
+    "quick-lint-js": "^3.0.0"
   }
 }
