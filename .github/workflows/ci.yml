@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -33,9 +33,9 @@ jobs:
             ~/.nvm
             ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/node_modules
             ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/package-lock.json
-          key: ${{ runner.os }}-node_modules-cache-v4-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-24-node_modules-cache-v4-${{ hashFiles('package.json') }}
           restore-keys: |
-            ${{ runner.os }}-node_modules-cache-v4-
+            ${{ runner.os }}-24-node_modules-cache-v4-
 
       - name: Extract Tag Name
         run: echo "TAG_NAME=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV

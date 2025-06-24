@@ -1,0 +1,66 @@
+name: Node Matrix CI
+
+on:
+  push:
+    paths-ignore:
+      - "*.md"
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-2019
+        node:
+          - 16
+          - 18
+          - 20
+          - 22
+    name: Testing Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Cache node_modules on non-windows os
+        if: ${{ !startsWith(matrix.os, 'windows') }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.nvm
+            ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/node_modules
+            ~/work/better-sqlite3-wrapper/better-sqlite3-wrapper/package-lock.json
+          key: ${{ runner.os }}-${{ matrix.node }}-node_modules-cache-v1-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node }}-node_modules-cache-v1-
+
+      - name: Cache node_modules on windows os
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/AppData/Roaming/npm
+            D:/a/better-sqlite3-wrapper/better-sqlite3-wrapper/node_modules
+            D:/a/better-sqlite3-wrapper/better-sqlite3-wrapper/package-lock.json
+          key: ${{ runner.os }}-${{ matrix.node }}-node_modules-cache-v1-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node }}-node_modules-cache-v1-
+
+      - name: Run tests
+        run: |
+          npm i
+          node ./index.test.js
