@@ -38,11 +38,11 @@
   },
   "browserslist": "maintained node versions",
   "engines": {
-    "node": ">=18",
+    "node": ">=16",
     "bun": ">=0.8"
   },
   "optionalDependencies": {
-    "better-sqlite3": "^11.5.0"
+    "better-sqlite3": "8.7.0"
   },
   "devDependencies": {
     "prettier": "^2.8.8",
