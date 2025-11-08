@@ -10,6 +10,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -58,8 +63,5 @@ jobs:
           VERSION="$(echo "$TAG_NAME" | cut -d'v' -f 2)"
           echo "Publish a release version=$VERSION for tag $TAG_NAME"
           npm --no-git-tag-version --allow-same-version version $VERSION
-          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
           npm publish
         if: ${{ env.TAG_NAME != '' }}
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
