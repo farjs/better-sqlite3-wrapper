@@ -23,7 +23,7 @@ it("should open in-memory database", () => {
     results.map((r) => {
       return { ...r };
     }),
-    [{ message: "Hello world" }]
+    [{ message: "Hello world" }],
   );
 
   //when & then
@@ -33,7 +33,7 @@ it("should open in-memory database", () => {
 it("should create file-based database", () => {
   //given
   const tmpDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), "better-sqlite3-wrapper-")
+    path.join(os.tmpdir(), "better-sqlite3-wrapper-"),
   );
   const file = path.join(tmpDir, "test.db");
   let db = new Database(file);
@@ -48,7 +48,7 @@ it("should create file-based database", () => {
                 id     integer primary key,
                 name   text not null
             );
-        `
+        `,
     ).run();
     const insert = db.prepare("insert into test (name) values (?);");
     insert.run("test1");
@@ -80,7 +80,7 @@ it("should create file-based database", () => {
         id: 2,
         name: "test2",
       },
-    ]
+    ],
   );
 
   //cleanup
@@ -100,7 +100,7 @@ it("should rollback failed transaction", () => {
               id     integer primary key,
               name   text not null
           );
-      `
+      `,
   ).run();
   assert.deepEqual(changesQuery.get().changes, 0);
   assert.deepEqual(lastInsertRowIdQuery.get().id, 0);
@@ -131,7 +131,7 @@ it("should rollback failed transaction", () => {
     query.all().map((r) => {
       return { ...r };
     }),
-    []
+    [],
   );
 
   //cleanup
